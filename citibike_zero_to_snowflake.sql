@@ -3,6 +3,14 @@ Snowflake入門 - ゼロからはじめるSnowflake
 https://quickstarts.snowflake.com/guide/getting_started_with_snowflake_ja/index.html?index=..%2F..ja#3
 */
 
+-- 1-3
+use role accountadmin;
+create DATABASE IDENTIFIER('"CITIBIKE_QQ"') COMMENT = ''
+
+use warehouse compute_wh;
+use database CITIBIKE_QQ;
+use schema public;
+
 -- 4. データロード準備: テーブル作成
 create or replace table trips
 (tripduration integer,
@@ -93,7 +101,7 @@ create table trips_dev clone trips;
 create database weather;
 
 -- コンテキスト設定
-use role sysadmin;
+use role accountadmin;
 use warehouse compute_wh;
 use database weather;
 use schema public;
@@ -167,7 +175,7 @@ undrop table json_weather_data;
 select * from json_weather_data limit 10;
 
 -- テーブルのロールバック: コンテキスト設定
-use role sysadmin;
+use role accountadmin;
 use warehouse compute_wh;
 use database citibike_qq;
 use schema public;
