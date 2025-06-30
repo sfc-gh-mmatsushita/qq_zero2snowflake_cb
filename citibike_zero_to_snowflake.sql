@@ -234,7 +234,7 @@ use warehouse compute_wh;
 -- コンテキスト設定
 use role accountadmin;
 
--- citibikeとweatherテーブルを使用するための権限を付与
+-- citibike_qqとweatherテーブルを使用するための権限を付与
 grant usage on database citibike_qq to role junior_dba;
 grant usage on database weather to role junior_dba;
 
