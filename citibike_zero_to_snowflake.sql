@@ -3,13 +3,17 @@ Snowflake入門 - ゼロからはじめるSnowflake
 https://quickstarts.snowflake.com/guide/getting_started_with_snowflake_ja/index.html?index=..%2F..ja#3
 */
 
--- 1-3
-use role accountadmin;
-create DATABASE IDENTIFIER('"CITIBIKE_QQ"') COMMENT = ''
+-- 1.から3.
+use role sysadmin;
+create DATABASE IDENTIFIER('"CITIBIKE_QQ"') COMMENT = 'citibike_qq db for zero to snowflake';
 
+use role sysadmin;
 use warehouse compute_wh;
 use database CITIBIKE_QQ;
 use schema public;
+
+-- Worksheet名をCITIBIKE_ZERO_TO_SNOWFLAKEに変更
+
 
 -- 4. データロード準備: テーブル作成
 create or replace table trips
@@ -47,6 +51,14 @@ create or replace file format csv type='csv'
 -- ファイル形式表示
 show file formats in database citibike_qq;
 
+-- UIでウェアハウス確認とcompute_whのサイズ変更(XS->S)
+
+-- コンテキスト確認
+use role sysadmin;
+use warehouse compute_wh;
+use database CITIBIKE_QQ;
+use schema public;
+
 -- 5. データロード: ロード実行(Small: 40秒)
 copy into trips from @citibike_trips file_format=csv PATTERN = '.*csv.*' ;
 
@@ -67,7 +79,14 @@ copy into trips from @citibike_trips
 file_format=CSV;
 
 -- 6. クエリ・結果キャッシュ・クローン操作
--- GUIでウェアハウス作成(analytics_wh)
+-- GUIでウェアハウス作成(analytics_wh, L)
+
+-- コンテキスト確認
+use role sysadmin;
+use warehouse ANALYTICS_WH;
+use database CITIBIKE_QQ;
+use schema public;
+
 -- テーブル確認
 select * from trips limit 20;
 
@@ -101,7 +120,7 @@ create table trips_dev clone trips;
 create database weather;
 
 -- コンテキスト設定
-use role accountadmin;
+use role sysadmin;
 use warehouse compute_wh;
 use database weather;
 use schema public;
@@ -175,7 +194,7 @@ undrop table json_weather_data;
 select * from json_weather_data limit 10;
 
 -- テーブルのロールバック: コンテキスト設定
-use role accountadmin;
+use role sysadmin;
 use warehouse compute_wh;
 use database citibike_qq;
 use schema public;
@@ -242,8 +261,11 @@ grant usage on database weather to role junior_dba;
 use role junior_dba;
 
 -- アカウント管理者UIの表示: Worksheetからaccountadminに変更
+-- ホームアイコンをクリック、UIの左上にある自分の名前をクリックし、ユーザー設定メニューを表示、メニューで「ロールの切り替え」へ進み、ACCOUNTADMINを選択
+-- 10.セクションのために、UIセッションはACCOUNTADMINロールのまま
 
 -- 10. 安全なデータ共有とマーケットプレイス(UIから)
+-- zero_to_snowflake-shared_data
 
 -- 環境のリセット
 use role accountadmin;
