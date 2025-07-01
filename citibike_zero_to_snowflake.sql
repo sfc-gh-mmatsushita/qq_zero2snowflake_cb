@@ -3,17 +3,18 @@ Snowflake入門 - ゼロからはじめるSnowflake
 https://quickstarts.snowflake.com/guide/getting_started_with_snowflake_ja/index.html?index=..%2F..ja#3
 */
 
--- 1.から3.
-use role sysadmin;
-create DATABASE IDENTIFIER('"CITIBIKE_QQ"') COMMENT = 'citibike_qq db for zero to snowflake';
+-- 1-3: 単純化のためaccountadminロールを使用
+/*
+use role accountadmin;
+create DATABASE IF NOT EXISTS CITIBIKE_QQ COMMENT = 'citibike_qq db for zero to snowflake';
 
-use role sysadmin;
+use role accountadmin;
 use warehouse compute_wh;
 use database CITIBIKE_QQ;
 use schema public;
+*/
 
 -- Worksheet名をCITIBIKE_ZERO_TO_SNOWFLAKEに変更
-
 
 -- 4. データロード準備: テーブル作成
 create or replace table trips
@@ -51,15 +52,15 @@ create or replace file format csv type='csv'
 -- ファイル形式表示
 show file formats in database citibike_qq;
 
--- UIでウェアハウス確認とcompute_whのサイズ変更(XS->S)
-
 -- コンテキスト確認
-use role sysadmin;
+use role accountadmin;
 use warehouse compute_wh;
 use database CITIBIKE_QQ;
 use schema public;
 
--- 5. データロード: ロード実行(Small: 40秒)
+-- 5. データロード: UIでウェアハウス確認とcompute_whのサイズ変更(XS->S)
+
+-- データロード: ロード実行(Small: 40秒)
 copy into trips from @citibike_trips file_format=csv PATTERN = '.*csv.*' ;
 
 -- テーブル削除
@@ -78,11 +79,11 @@ show warehouses;
 copy into trips from @citibike_trips
 file_format=CSV;
 
--- 6. クエリ・結果キャッシュ・クローン操作
 -- GUIでウェアハウス作成(analytics_wh, L)
+-- create WAREHOUSE IDENTIFIER('"ANALYTICS_WH"') COMMENT = '' WAREHOUSE_SIZE = 'Large' AUTO_RESUME = true AUTO_SUSPEND = 300 ENABLE_QUERY_ACCELERATION = false WAREHOUSE_TYPE = 'STANDARD' RESOURCE_CONSTRAINT = 'STANDARD_GEN_1' MIN_CLUSTER_COUNT = 1 MAX_CLUSTER_COUNT = 1 SCALING_POLICY = 'STANDARD'
 
--- コンテキスト確認
-use role sysadmin;
+-- 6. クエリ・結果キャッシュ・クローン操作: コンテキスト確認
+use role accountadmin;
 use warehouse ANALYTICS_WH;
 use database CITIBIKE_QQ;
 use schema public;
@@ -120,7 +121,7 @@ create table trips_dev clone trips;
 create database weather;
 
 -- コンテキスト設定
-use role sysadmin;
+use role accountadmin;
 use warehouse compute_wh;
 use database weather;
 use schema public;
@@ -194,7 +195,7 @@ undrop table json_weather_data;
 select * from json_weather_data limit 10;
 
 -- テーブルのロールバック: コンテキスト設定
-use role sysadmin;
+use role accountadmin;
 use warehouse compute_wh;
 use database citibike_qq;
 use schema public;
@@ -230,7 +231,7 @@ order by 2 desc
 limit 20;
 
 
--- 9. ロール、アカウント管理者、アカウント使用状況: コンテキスト設定
+-- [スキップ] 9. ロール、アカウント管理者、アカウント使用状況: コンテキスト設定
 use role accountadmin;
 
 -- ロール作成と割り当て
@@ -260,9 +261,11 @@ grant usage on database weather to role junior_dba;
 -- コンテキスト設定
 use role junior_dba;
 
--- アカウント管理者UIの表示: Worksheetからaccountadminに変更
--- ホームアイコンをクリック、UIの左上にある自分の名前をクリックし、ユーザー設定メニューを表示、メニューで「ロールの切り替え」へ進み、ACCOUNTADMINを選択
--- 10.セクションのために、UIセッションはACCOUNTADMINロールのまま
+/*
+アカウント管理者UIの表示: Worksheetからaccountadminに変更
+ホームアイコンをクリック、UIの左上にある自分の名前をクリックし、ユーザー設定メニューを表示、メニューで「ロールの切り替え」へ進み、ACCOUNTADMINを選択
+10.セクションのために、UIセッションはACCOUNTADMINロールのまま
+*/
 
 -- 10. 安全なデータ共有とマーケットプレイス(UIから)
 -- zero_to_snowflake-shared_data
