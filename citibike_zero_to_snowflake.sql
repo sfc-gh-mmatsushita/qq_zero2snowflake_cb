@@ -3,7 +3,7 @@ Snowflake入門 - ゼロからはじめるSnowflake
 https://quickstarts.snowflake.com/guide/getting_started_with_snowflake_ja/index.html?index=..%2F..ja#3
 */
 
--- 1-3: 単純化のためaccountadminロールを使用
+-- 1-3: シンプル化のためaccountadminロールを使用
 /*
 use role accountadmin;
 create DATABASE IF NOT EXISTS CITIBIKE_QQ COMMENT = 'citibike_qq db for zero to snowflake';
